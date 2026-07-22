@@ -5,6 +5,7 @@ on:
     types: [closed]
 
 permissions:
+  actions: write
   contents: write
   issues: read
   id-token: write
@@ -82,3 +83,9 @@ jobs:
           git add "${{ steps.archive.outputs.path }}"
           git commit -m "Archive issue #${ISSUE_NUMBER}"
           git push origin "HEAD:${DEFAULT_BRANCH}"
+
+      - name: Trigger GitHub Pages deployment
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref "${DEFAULT_BRANCH}"
