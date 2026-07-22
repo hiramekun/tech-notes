@@ -3,23 +3,25 @@ import Link from "next/link";
 
 export function SiteHeader() {
   return (
-    <header className="site-header">
+    <header className="top-app-bar">
       <Link className="brand" href="/reports" aria-label="すべての記事を見る">
-        <span className="brand-mark">T/N</span>
+        <span className="brand-mark" aria-hidden="true">
+          T/N
+        </span>
         <span>
-          <strong>TECH NOTES</strong>
-          <small>REPORT ARCHIVE</small>
+          <strong>Tech Notes</strong>
+          <small>Report archive</small>
         </span>
       </Link>
 
       <a
-        className="repository-link"
+        className="md-button md-button--text repository-link"
         href="https://github.com/hiramekun/tech-notes"
         target="_blank"
         rel="noreferrer"
       >
         <GitBranch aria-hidden="true" size={18} />
-        Repository
+        <span className="repository-label">Repository</span>
       </a>
     </header>
   );

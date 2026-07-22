@@ -10,14 +10,11 @@ export const metadata: Metadata = {
 
 export default function ReportsPage() {
   return (
-    <main className="site-shell index-shell">
-      <div className="ambient ambient-one" />
-      <div className="ambient ambient-two" />
-
+    <main className="app-shell">
       <SiteHeader />
       <ReportIndex />
 
-      <footer className="site-footer index-footer">
+      <footer className="app-footer index-footer">
         <span>ISSUES → NOTES → REPORTS</span>
         <span>Built from closed GitHub issues.</span>
       </footer>

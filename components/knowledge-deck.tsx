@@ -34,7 +34,8 @@ const cardVariants: Variants = {
     x: customDirection * 560,
     opacity: 0,
     rotate: customDirection * 10,
-    transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
+    // M3 の emphasized accelerate イージング (退場)
+    transition: { duration: 0.2, ease: [0.3, 0, 0.8, 0.15] },
   }),
 };
 
@@ -105,19 +106,19 @@ function SwipeCard({ note, direction, pageNumber, totalPages, onSwipe }: SwipeCa
       aria-label={`${note.title}の技術レポート`}
     >
       <motion.span className="swipe-cue swipe-cue-left" style={{ opacity: leftCueOpacity }}>
-        TURN
+        <ArrowLeft aria-hidden="true" size={16} /> めくる
       </motion.span>
       <motion.span className="swipe-cue swipe-cue-right" style={{ opacity: rightCueOpacity }}>
-        TURN
+        めくる <ArrowRight aria-hidden="true" size={16} />
       </motion.span>
 
       <header className="card-header">
-        <div className="report-kicker">
+        <div className="card-overline">
           <span>TECHNICAL REPORT</span>
           <span>RANDOM ARCHIVE</span>
         </div>
         <div className="card-meta-row">
-          <span className={`category category-${note.category}`}>
+          <span className={`md-chip md-chip--small category category-${note.category}`}>
             {categoryNames[note.category] ?? note.category}
           </span>
           {note.issueNumber && <span className="issue-number">ISSUE #{note.issueNumber}</span>}
@@ -138,13 +139,15 @@ function SwipeCard({ note, direction, pageNumber, totalPages, onSwipe }: SwipeCa
       <footer className="card-footer">
         <div className="tag-list" aria-label="ラベル">
           {note.labels.slice(0, 4).map((label) => (
-            <span key={label}>#{label}</span>
+            <span className="md-chip md-chip--outlined md-chip--small" key={label}>
+              {label}
+            </span>
           ))}
         </div>
         <div className="report-footer-meta">
           {note.sourceUrl && (
-            <a href={note.sourceUrl} target="_blank" rel="noreferrer">
-              Issueを開く <ExternalLink aria-hidden="true" size={14} />
+            <a className="md-button md-button--text" href={note.sourceUrl} target="_blank" rel="noreferrer">
+              Issueを開く <ExternalLink aria-hidden="true" size={16} />
             </a>
           )}
           <span className="report-folio">
@@ -227,7 +230,7 @@ export function KnowledgeDeck() {
   if (loading) {
     return (
       <section className="deck-state" aria-live="polite">
-        <span className="loading-orbit" />
+        <span className="md-circular-progress" role="progressbar" aria-label="読み込み中" />
         <h2>レポートを準備中</h2>
         <p>技術ノートのアーカイブを読み込んでいます。</p>
       </section>
@@ -249,8 +252,13 @@ export function KnowledgeDeck() {
         <span className="empty-number">00</span>
         <h2>最初のレポートを待っています</h2>
         <p>回答済みのIssueをクローズすると、ここに技術レポートが追加されます。</p>
-        <a href="https://github.com/hiramekun/tech-notes/issues" target="_blank" rel="noreferrer">
-          Issueを見る <ExternalLink aria-hidden="true" size={15} />
+        <a
+          className="md-button md-button--filled"
+          href="https://github.com/hiramekun/tech-notes/issues"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Issueを見る <ExternalLink aria-hidden="true" size={16} />
         </a>
       </section>
     );
@@ -260,14 +268,14 @@ export function KnowledgeDeck() {
     <section className="deck-section" aria-label="知識レポート">
       <div className="deck-status" aria-live="polite">
         <span>{progressText}</span>
-        <span>
+        <span className="md-chip md-chip--tonal md-chip--small">
           <Shuffle aria-hidden="true" size={14} /> ランダム表示
         </span>
       </div>
 
       <div className="card-stage">
-        <div className="card-shadow card-shadow-back" />
-        <div className="card-shadow card-shadow-front" />
+        <div className="card-stack-layer card-stack-layer-back" />
+        <div className="card-stack-layer card-stack-layer-front" />
         <AnimatePresence custom={direction}>
           <SwipeCard
             key={`${cycle}-${currentNote.id}`}
@@ -281,14 +289,19 @@ export function KnowledgeDeck() {
       </div>
 
       <div className="deck-controls">
-        <button type="button" onClick={() => advance(-1)} aria-label="左へめくって次のレポートへ">
+        <button
+          className="md-icon-button md-icon-button--outlined md-icon-button--large"
+          type="button"
+          onClick={() => advance(-1)}
+          aria-label="左へめくって次のレポートへ"
+        >
           <ArrowLeft aria-hidden="true" />
         </button>
         <p>
-          <strong>TURN THE PAGE</strong>
+          <strong>次のノートへ</strong>
           <span>左右にドラッグ / 矢印キー</span>
         </p>
-        <button type="button" onClick={() => advance(1)} aria-label="右へめくって次のレポートへ">
+        <button className="md-fab" type="button" onClick={() => advance(1)} aria-label="右へめくって次のレポートへ">
           <ArrowRight aria-hidden="true" />
         </button>
       </div>

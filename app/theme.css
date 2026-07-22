@@ -1,0 +1,228 @@
+/*
+ * Material Design 3 design tokens
+ * https://m3.material.io/develop/web
+ *
+ * カラーロールは @material/material-color-utilities の SchemeTonalSpot で
+ * ソースカラー #B8E36B から生成した値。カテゴリ色はソースカラーへ
+ * harmonize (blend) したカスタムカラー。再生成する場合も同じ手順を取ること。
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* --- sys.color (light) --- */
+  --md-sys-color-primary: #506628;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #d1ec9f;
+  --md-sys-color-on-primary-container: #394d12;
+  --md-sys-color-secondary: #596248;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #dde6c6;
+  --md-sys-color-on-secondary-container: #424a32;
+  --md-sys-color-tertiary: #396661;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #bcece5;
+  --md-sys-color-on-tertiary-container: #1f4e49;
+  --md-sys-color-error: #ba1a1a;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #ffdad6;
+  --md-sys-color-on-error-container: #93000a;
+  --md-sys-color-background: #fafaee;
+  --md-sys-color-on-background: #1a1c15;
+  --md-sys-color-surface: #fafaee;
+  --md-sys-color-on-surface: #1a1c15;
+  --md-sys-color-surface-variant: #e2e4d4;
+  --md-sys-color-on-surface-variant: #45483d;
+  --md-sys-color-surface-dim: #dadbcf;
+  --md-sys-color-surface-bright: #fafaee;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #f4f4e9;
+  --md-sys-color-surface-container: #eeefe3;
+  --md-sys-color-surface-container-high: #e8e9dd;
+  --md-sys-color-surface-container-highest: #e3e3d8;
+  --md-sys-color-outline: #75786b;
+  --md-sys-color-outline-variant: #c5c8b9;
+  --md-sys-color-inverse-surface: #2f312a;
+  --md-sys-color-inverse-on-surface: #f1f1e6;
+  --md-sys-color-inverse-primary: #b6d086;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-shadow: #000000;
+
+  /* --- カテゴリごとのカスタムカラー (light) --- */
+  --note-frontend-container: #e1e0ff;
+  --note-frontend-on-container: #080764;
+  --note-backend-container: #cce5ff;
+  --note-backend-on-container: #001d31;
+  --note-infra-container: #72f8e9;
+  --note-infra-on-container: #00201d;
+  --note-database-container: #ffdeac;
+  --note-database-on-container: #281900;
+  --note-language-container: #ffd8e9;
+  --note-language-on-container: #3c0029;
+  --note-ai-ml-container: #e2dfff;
+  --note-ai-ml-on-container: #100069;
+  --note-security-container: #ffdbcd;
+  --note-security-on-container: #360f00;
+  --note-devops-container: #c2e8ff;
+  --note-devops-on-container: #001e2c;
+  --note-architecture-container: #d6e3ff;
+  --note-architecture-on-container: #001b3c;
+  --note-cs-fundamentals-container: #ffdcbe;
+  --note-cs-fundamentals-on-container: #2c1600;
+
+  /* --- シンタックスハイライト (surface-container-highest 上で読める配色) --- */
+  --note-code-comment: #5b6157;
+  --note-code-keyword: #8b2f8f;
+  --note-code-string: #2f6b25;
+  --note-code-function: #1a5fb4;
+  --note-code-type: #0f6e63;
+  --note-code-number: #6b3fc4;
+  --note-code-variable: #855100;
+  --note-code-meta: #a04a00;
+  --note-code-addition: #2f6b25;
+  --note-code-deletion: #a3000f;
+
+  /* --- sys.typescale --- */
+  --md-sys-typescale-brand-font:
+    Roboto, "Roboto Flex", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", YuGothic, system-ui, sans-serif;
+  --md-sys-typescale-plain-font: var(--md-sys-typescale-brand-font);
+  --md-sys-typescale-mono-font: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --md-sys-typescale-display-small-size: 36px;
+  --md-sys-typescale-display-small-line-height: 44px;
+  --md-sys-typescale-headline-large-size: 32px;
+  --md-sys-typescale-headline-large-line-height: 40px;
+  --md-sys-typescale-headline-medium-size: 28px;
+  --md-sys-typescale-headline-medium-line-height: 36px;
+  --md-sys-typescale-headline-small-size: 24px;
+  --md-sys-typescale-headline-small-line-height: 32px;
+  --md-sys-typescale-title-large-size: 22px;
+  --md-sys-typescale-title-large-line-height: 28px;
+  --md-sys-typescale-title-medium-size: 16px;
+  --md-sys-typescale-title-medium-line-height: 24px;
+  --md-sys-typescale-title-small-size: 14px;
+  --md-sys-typescale-title-small-line-height: 20px;
+  --md-sys-typescale-body-large-size: 16px;
+  --md-sys-typescale-body-large-line-height: 24px;
+  --md-sys-typescale-body-medium-size: 14px;
+  --md-sys-typescale-body-medium-line-height: 20px;
+  --md-sys-typescale-body-small-size: 12px;
+  --md-sys-typescale-body-small-line-height: 16px;
+  --md-sys-typescale-label-large-size: 14px;
+  --md-sys-typescale-label-large-line-height: 20px;
+  --md-sys-typescale-label-medium-size: 12px;
+  --md-sys-typescale-label-medium-line-height: 16px;
+  --md-sys-typescale-label-small-size: 11px;
+  --md-sys-typescale-label-small-line-height: 16px;
+
+  /* --- sys.shape --- */
+  --md-sys-shape-corner-none: 0;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* --- sys.elevation --- */
+  --md-sys-elevation-level0: none;
+  --md-sys-elevation-level1: 0 1px 2px 0 rgb(0 0 0 / 30%), 0 1px 3px 1px rgb(0 0 0 / 15%);
+  --md-sys-elevation-level2: 0 1px 2px 0 rgb(0 0 0 / 30%), 0 2px 6px 2px rgb(0 0 0 / 15%);
+  --md-sys-elevation-level3: 0 1px 3px 0 rgb(0 0 0 / 30%), 0 4px 8px 3px rgb(0 0 0 / 15%);
+  --md-sys-elevation-level4: 0 2px 3px 0 rgb(0 0 0 / 30%), 0 6px 10px 4px rgb(0 0 0 / 15%);
+  --md-sys-elevation-level5: 0 4px 4px 0 rgb(0 0 0 / 30%), 0 8px 12px 6px rgb(0 0 0 / 15%);
+
+  /* --- sys.state (state layer opacity) --- */
+  --md-sys-state-hover-opacity: 0.08;
+  --md-sys-state-focus-opacity: 0.1;
+  --md-sys-state-pressed-opacity: 0.1;
+  --md-sys-state-dragged-opacity: 0.16;
+  --md-sys-state-disabled-content-opacity: 0.38;
+  --md-sys-state-disabled-container-opacity: 0.12;
+
+  /* --- sys.motion --- */
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long2: 500ms;
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* --- sys.color (dark) --- */
+    --md-sys-color-primary: #b6d086;
+    --md-sys-color-on-primary: #243600;
+    --md-sys-color-primary-container: #394d12;
+    --md-sys-color-on-primary-container: #d1ec9f;
+    --md-sys-color-secondary: #c1caab;
+    --md-sys-color-on-secondary: #2b331d;
+    --md-sys-color-secondary-container: #424a32;
+    --md-sys-color-on-secondary-container: #dde6c6;
+    --md-sys-color-tertiary: #a0d0c9;
+    --md-sys-color-on-tertiary: #013733;
+    --md-sys-color-tertiary-container: #1f4e49;
+    --md-sys-color-on-tertiary-container: #bcece5;
+    --md-sys-color-error: #ffb4ab;
+    --md-sys-color-on-error: #690005;
+    --md-sys-color-error-container: #93000a;
+    --md-sys-color-on-error-container: #ffdad6;
+    --md-sys-color-background: #12140e;
+    --md-sys-color-on-background: #e3e3d8;
+    --md-sys-color-surface: #12140e;
+    --md-sys-color-on-surface: #e3e3d8;
+    --md-sys-color-surface-variant: #45483d;
+    --md-sys-color-on-surface-variant: #c5c8b9;
+    --md-sys-color-surface-dim: #12140e;
+    --md-sys-color-surface-bright: #383a32;
+    --md-sys-color-surface-container-lowest: #0d0f09;
+    --md-sys-color-surface-container-low: #1a1c15;
+    --md-sys-color-surface-container: #1e2019;
+    --md-sys-color-surface-container-high: #292b23;
+    --md-sys-color-surface-container-highest: #34362e;
+    --md-sys-color-outline: #8f9284;
+    --md-sys-color-outline-variant: #45483d;
+    --md-sys-color-inverse-surface: #e3e3d8;
+    --md-sys-color-inverse-on-surface: #2f312a;
+    --md-sys-color-inverse-primary: #506628;
+
+    /* --- カテゴリごとのカスタムカラー (dark) --- */
+    --note-frontend-container: #3a3d8f;
+    --note-frontend-on-container: #e1e0ff;
+    --note-backend-container: #004b73;
+    --note-backend-on-container: #cce5ff;
+    --note-infra-container: #00504a;
+    --note-infra-on-container: #72f8e9;
+    --note-database-container: #5f4100;
+    --note-database-on-container: #ffdeac;
+    --note-language-container: #831560;
+    --note-language-on-container: #ffd8e9;
+    --note-ai-ml-container: #3729c2;
+    --note-ai-ml-on-container: #e2dfff;
+    --note-security-container: #7e2c00;
+    --note-security-on-container: #ffdbcd;
+    --note-devops-container: #004d68;
+    --note-devops-on-container: #c2e8ff;
+    --note-architecture-container: #00468a;
+    --note-architecture-on-container: #d6e3ff;
+    --note-cs-fundamentals-container: #693c00;
+    --note-cs-fundamentals-on-container: #ffdcbe;
+
+    /* --- シンタックスハイライト (dark) --- */
+    --note-code-comment: #9aa392;
+    --note-code-keyword: #ff927f;
+    --note-code-string: #c8e79b;
+    --note-code-function: #8bbcff;
+    --note-code-type: #7ed5c9;
+    --note-code-number: #dda7f6;
+    --note-code-variable: #f2c66d;
+    --note-code-meta: #ffb86b;
+    --note-code-addition: #c8e79b;
+    --note-code-deletion: #ff8d9a;
+  }
+}
