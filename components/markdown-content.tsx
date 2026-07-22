@@ -1,7 +1,10 @@
 "use client";
 
 import type { ComponentPropsWithoutRef } from "react";
+import dockerfile from "highlight.js/lib/languages/dockerfile";
+import { common } from "lowlight";
 import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 
@@ -11,11 +14,26 @@ type MarkdownContentProps = {
   content: string;
 };
 
+const highlightLanguages = {
+  ...common,
+  dockerfile,
+};
+
 export function MarkdownContent({ content }: MarkdownContentProps) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeSanitize]}
+      rehypePlugins={[
+        rehypeSanitize,
+        [
+          rehypeHighlight,
+          {
+            detect: false,
+            languages: highlightLanguages,
+            plainText: ["mermaid"],
+          },
+        ],
+      ]}
       components={{
         a: ({ children, ...props }: ComponentPropsWithoutRef<"a">) => (
           <a {...props} target="_blank" rel="noreferrer">

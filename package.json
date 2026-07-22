@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "gray-matter": "4.0.3",
+    "highlight.js": "11.11.1",
+    "lowlight": "3.3.0",
     "lucide-react": "1.25.0",
     "mermaid": "11.16.0",
     "motion": "12.42.2",
@@ -19,6 +21,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-markdown": "10.1.0",
+    "rehype-highlight": "7.0.2",
     "rehype-sanitize": "6.0.0",
     "remark-gfm": "4.0.1"
   },
