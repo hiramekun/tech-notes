@@ -10,4 +10,4 @@
 
 自動生成されたノートを手動で修正することもできます。ただし、同じ issue を reopen して再度 close すると、その issue のファイルはClaudeによる最新の再整理結果で上書きされます。
 
-`notes/_demo/` はローカル確認用のダミーカードです。`npm run dev` では表示されますが、GitHub Actions上の本番ビルドからは自動的に除外されます。ローカルでも除外したい場合は `INCLUDE_DEMO_NOTES=false npm run dev` を使用します。
+`notes/_demo/` はローカル確認用のダミーカードです。通常のノートが0件の場合にだけローカルで表示され、通常のノートが1件以上あれば自動的に除外されます。GitHub Actions上の本番ビルドでは常に除外されます。ローカルでもフォールバックを無効にしたい場合は `INCLUDE_DEMO_NOTES=false npm run dev` を使用します。
