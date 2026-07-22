@@ -48,7 +48,7 @@ a {
   flex-direction: column;
   align-items: center;
   overflow: hidden;
-  padding: 18px clamp(18px, 3vw, 46px) 14px;
+  padding: 12px clamp(18px, 3vw, 46px) 10px;
 }
 
 .ambient {
@@ -142,7 +142,7 @@ a {
 
 .deck-section {
   width: min(1120px, 100%);
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 .deck-status {
@@ -150,7 +150,7 @@ a {
   max-width: 1040px;
   align-items: center;
   justify-content: space-between;
-  margin: 0 auto 9px;
+  margin: 0 auto 6px;
   padding: 0 5px;
   color: #59636a;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -168,7 +168,7 @@ a {
 .card-stage {
   position: relative;
   width: min(1040px, calc(100vw - 48px));
-  height: clamp(600px, calc(100svh - 205px), 900px);
+  height: clamp(640px, calc(100svh - 160px), 1060px);
   margin: 0 auto;
   perspective: 1200px;
 }
@@ -196,14 +196,18 @@ a {
 }
 
 .knowledge-card {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background:
     linear-gradient(90deg, transparent 0 42px, rgb(99 137 232 / 12%) 42px 43px, transparent 43px),
     var(--paper);
   box-shadow: 0 24px 70px rgb(31 42 48 / 14%), 0 3px 10px rgb(31 42 48 / 8%);
   cursor: grab;
+  scrollbar-color: #bcb5aa transparent;
+  scrollbar-width: thin;
   touch-action: pan-y;
   will-change: transform;
 }
@@ -239,6 +243,7 @@ a {
 
 .card-header {
   position: relative;
+  flex: none;
   border-bottom: 1px solid var(--line);
   padding: 25px 48px 22px;
 }
@@ -327,7 +332,7 @@ a {
 .card-header h2 {
   max-width: 850px;
   margin: 16px 0 13px;
-  font-size: clamp(24px, 3vw, 36px);
+  font-size: clamp(24px, 2.6vw, 31px);
   font-weight: 820;
   letter-spacing: -0.045em;
   line-height: 1.22;
@@ -346,11 +351,8 @@ a {
 }
 
 .card-content {
-  overflow: auto;
-  overscroll-behavior: contain;
+  flex: 1 0 auto;
   padding: 32px 56px 54px;
-  scrollbar-color: #bcb5aa transparent;
-  scrollbar-width: thin;
   cursor: auto;
 }
 
@@ -475,12 +477,214 @@ a {
 }
 
 .mermaid-diagram {
+  position: relative;
+  display: block;
+  width: 100%;
   overflow-x: auto;
+  color: inherit;
+  font: inherit;
+  cursor: zoom-in;
   text-align: center;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
-.mermaid-diagram svg {
+.mermaid-diagram:hover {
+  border-color: var(--ink);
+  box-shadow: 3px 3px 0 var(--lime);
+}
+
+.mermaid-diagram:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.mermaid-diagram-image {
+  display: block;
+}
+
+.mermaid-diagram-image svg {
   max-width: 100%;
+  height: auto;
+}
+
+.diagram-zoom-label {
+  position: absolute;
+  z-index: 1;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: rgb(255 253 248 / 92%);
+  padding: 6px 8px;
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+
+.diagram-lightbox {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(16 24 29 / 78%);
+  padding: clamp(14px, 3vw, 36px);
+  backdrop-filter: blur(5px);
+}
+
+.diagram-lightbox-panel {
+  display: grid;
+  width: min(1500px, 100%);
+  height: min(940px, 100%);
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--paper);
+  box-shadow: 12px 12px 0 rgb(184 227 107 / 85%);
+}
+
+.diagram-lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 16px 14px 22px;
+}
+
+.diagram-lightbox-header strong,
+.diagram-lightbox-header span {
+  display: block;
+}
+
+.diagram-lightbox-header strong {
+  font-size: 14px;
+}
+
+.diagram-lightbox-header span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.diagram-lightbox-header-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+}
+
+.diagram-lightbox-close {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.diagram-lightbox-close:hover {
+  background: var(--lime);
+}
+
+.diagram-lightbox-close:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.diagram-lightbox-body {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.diagram-lightbox-controls {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.diagram-lightbox-controls button {
+  display: inline-flex;
+  min-width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 0;
+  border-right: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.diagram-lightbox-controls button:last-child {
+  border-right: 0;
+  background: var(--lime);
+}
+
+.diagram-lightbox-controls button:hover:not(:disabled) {
+  background: #e9f8cf;
+}
+
+.diagram-lightbox-controls button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+}
+
+.diagram-lightbox-controls button:disabled {
+  color: #a5aaa6;
+  cursor: not-allowed;
+}
+
+.diagram-lightbox-controls .diagram-zoom-reset {
+  min-width: 82px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.diagram-lightbox-viewport {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background:
+    linear-gradient(rgb(23 33 40 / 3%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(23 33 40 / 3%) 1px, transparent 1px),
+    white;
+  background-size: 28px 28px;
+  padding: clamp(24px, 5vw, 70px);
+}
+
+.diagram-lightbox-figure {
+  display: grid;
+  min-height: 100%;
+  place-items: center;
+  transition: width 180ms ease, min-width 180ms ease;
+}
+
+.diagram-lightbox-figure svg {
+  width: 100%;
+  max-width: none;
   height: auto;
 }
 
@@ -491,6 +695,7 @@ a {
 }
 
 .card-footer {
+  flex: none;
   min-height: 58px;
   justify-content: space-between;
   gap: 16px;
@@ -542,7 +747,7 @@ a {
   align-items: center;
   justify-content: center;
   gap: 20px;
-  margin-top: 18px;
+  margin-top: 26px;
 }
 
 .deck-controls button {
@@ -649,7 +854,7 @@ a {
   width: min(1180px, 100%);
   justify-content: space-between;
   margin-top: auto;
-  padding-top: 22px;
+  padding-top: 14px;
   color: #6d746f;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 9px;
@@ -841,7 +1046,7 @@ a {
 
 @media (max-width: 640px) {
   .site-shell {
-    padding: 15px 14px 14px;
+    padding: 10px 14px;
   }
 
   .brand small,
@@ -850,12 +1055,12 @@ a {
   }
 
   .deck-section {
-    margin-top: 14px;
+    margin-top: 8px;
   }
 
   .card-stage {
     width: calc(100vw - 28px);
-    height: min(76svh, 720px);
+    height: max(500px, min(780px, calc(100svh - 145px)));
   }
 
   .report-kicker {
@@ -872,7 +1077,7 @@ a {
 
   .card-header h2 {
     margin: 13px 0 10px;
-    font-size: 22px;
+    font-size: 24px;
   }
 
   .card-content {
@@ -897,7 +1102,7 @@ a {
   }
 
   .deck-controls {
-    margin-top: 17px;
+    margin-top: 24px;
   }
 
   .deck-controls button {
@@ -907,11 +1112,43 @@ a {
 
   .site-footer {
     justify-content: center;
-    padding-top: 28px;
+    padding-top: 16px;
   }
 
   .site-footer span:last-child {
     display: none;
+  }
+
+  .diagram-lightbox {
+    padding: 8px;
+  }
+
+  .diagram-lightbox-panel {
+    box-shadow: 6px 6px 0 rgb(184 227 107 / 85%);
+  }
+
+  .diagram-lightbox-header {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .diagram-lightbox-header > div:first-child {
+    display: none;
+  }
+
+  .diagram-lightbox-header-actions {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .diagram-lightbox-controls button {
+    min-width: 38px;
+    height: 40px;
+  }
+
+  .diagram-lightbox-controls .diagram-zoom-reset {
+    min-width: 72px;
   }
 
   .report-index {
@@ -956,7 +1193,7 @@ a {
 
 @media (max-height: 820px) and (min-width: 641px) {
   .card-stage {
-    height: max(500px, calc(100svh - 190px));
+    height: max(540px, calc(100svh - 145px));
   }
 
   .site-footer {
