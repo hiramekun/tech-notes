@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  buildKnowledgeBody,
+  buildIssueContext,
   buildMarkdown,
   chooseCategory,
   cleanAssistantComment,
+  validateKnowledgeBody,
 } from "./archive-closed-issue.mjs";
 
 const issue = {
@@ -17,13 +18,23 @@ const issue = {
   labels: [{ name: "frontend" }, { name: "type:concept" }],
 };
 
-function aiComment(body, createdAt) {
-  return {
-    body,
-    created_at: createdAt,
-    user: { login: "claude[bot]", type: "Bot" },
-  };
-}
+const knowledgeBody = [
+  "## 概要",
+  "",
+  "Reactの状態管理について、Issue内の議論を整理した概要です。用途に応じて管理方法を選択します。",
+  "",
+  "## 何が嬉しいのか",
+  "",
+  "状態の責務を明確にすることで、変更しやすい設計になります。",
+  "",
+  "## 詳細",
+  "",
+  "ローカル状態と共有状態を分け、必要な範囲にだけ状態を公開します。実装では更新頻度も考慮します。",
+  "",
+  "## 参考リンク",
+  "",
+  "- https://react.dev/learn/managing-state",
+].join("\n");
 
 test("chooseCategory selects a known genre label", () => {
   assert.equal(chooseCategory(["type:concept", "frontend"]), "frontend");
@@ -35,29 +46,37 @@ test("cleanAssistantComment removes the action wrapper and progress footer", () 
   assert.equal(cleaned, "### 概要\n\n本文");
 });
 
-test("buildKnowledgeBody keeps the complete answer and appends later follow-ups", () => {
-  const comments = [
-    aiComment("### 概要\n\n短い補足です。", "2026-07-22T01:00:00Z"),
-    aiComment(
-      "### 概要\n\n概要です。\n\n### 何が嬉しいのか\n\n利点です。\n\n### 詳細\n\n詳細です。\n\n### 参考リンク\n\n- https://example.com",
-      "2026-07-22T02:00:00Z",
-    ),
-    aiComment(
-      "追加質問への回答です。状態管理はアプリケーションの規模に合わせて選択します。詳しい補足をここに記載します。",
-      "2026-07-22T03:00:00Z",
-    ),
-  ];
+test("buildIssueContext keeps the full discussion in chronological order", () => {
+  const context = buildIssueContext(issue, [
+    {
+      body: "後の質問です。",
+      created_at: "2026-07-22T03:00:00Z",
+      user: { login: "hiramekun", type: "User" },
+    },
+    {
+      body: "先の回答です。",
+      created_at: "2026-07-22T01:00:00Z",
+      user: { login: "claude[bot]", type: "Bot" },
+    },
+  ]);
 
-  const body = buildKnowledgeBody(issue, comments);
-  assert.match(body, /### 詳細/);
-  assert.match(body, /## 追加の議論/);
-  assert.match(body, /追加質問への回答/);
+  assert.equal(context.issue.title, issue.title);
+  assert.deepEqual(context.issue.labels, ["frontend", "type:concept"]);
+  assert.equal(context.comments[0].body, "先の回答です。");
+  assert.equal(context.comments[1].body, "後の質問です。");
 });
 
-test("buildMarkdown produces stable front matter and category", () => {
-  const result = buildMarkdown(issue, [], "2026-07-22T04:00:00Z");
+test("validateKnowledgeBody requires the standard note sections", () => {
+  assert.equal(validateKnowledgeBody(knowledgeBody), knowledgeBody);
+  assert.throws(() => validateKnowledgeBody("## 概要\n\n短い本文"), /too short/);
+});
+
+test("buildMarkdown combines deterministic metadata with Claude output", () => {
+  const result = buildMarkdown(issue, knowledgeBody, "2026-07-22T04:00:00Z");
   assert.equal(result.category, "frontend");
   assert.match(result.markdown, /issue: 42/);
   assert.match(result.markdown, /category: "frontend"/);
+  assert.match(result.markdown, /generated_by: "claude-code-action"/);
   assert.match(result.markdown, /# React の状態管理/);
+  assert.match(result.markdown, /## 詳細/);
 });

@@ -3,4 +3,5 @@
 node_modules/
 out/
 public/data/notes.json
+.closed-issue-context.json
 npm-debug.log*

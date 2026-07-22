@@ -18,10 +18,10 @@ const GENRE_LABELS = new Set([
 ]);
 
 const REQUIRED_SECTION_PATTERNS = [
-  /^#{2,4}\s*概要\s*$/m,
-  /^#{2,4}\s*何が嬉しいのか\s*$/m,
-  /^#{2,4}\s*詳細\s*$/m,
-  /^#{2,4}\s*参考リンク\s*$/m,
+  ["概要", /^#{2}\s*概要\s*$/m],
+  ["何が嬉しいのか", /^#{2}\s*何が嬉しいのか\s*$/m],
+  ["詳細", /^#{2}\s*詳細\s*$/m],
+  ["参考リンク", /^#{2}\s*参考リンク\s*$/m],
 ];
 
 export function chooseCategory(labels) {
@@ -53,55 +53,64 @@ export function cleanAssistantComment(rawBody) {
   return body;
 }
 
-function scoreComment(comment) {
-  const body = cleanAssistantComment(comment.body);
-  const sectionScore = REQUIRED_SECTION_PATTERNS.reduce(
-    (score, pattern) => score + (pattern.test(body) ? 1 : 0),
-    0,
-  );
-  return sectionScore * 100_000 + Math.min(body.length, 99_999);
+function labelsFromIssue(issue) {
+  return (issue.labels ?? [])
+    .map((label) => (typeof label === "string" ? label : label.name))
+    .filter(Boolean);
 }
 
-export function buildKnowledgeBody(issue, comments) {
-  const assistantComments = comments
-    .filter(isAiComment)
-    .sort((left, right) => Date.parse(left.created_at) - Date.parse(right.created_at));
+export function buildIssueContext(issue, comments) {
+  return {
+    issue: {
+      number: issue.number,
+      title: issue.title,
+      body: String(issue.body || "本文はありません。").trim(),
+      url: issue.html_url,
+      labels: labelsFromIssue(issue),
+      closedAt: issue.closed_at,
+    },
+    comments: [...comments]
+      .sort((left, right) => Date.parse(left.created_at) - Date.parse(right.created_at))
+      .map((comment) => ({
+        author: comment.user?.login ?? "unknown",
+        authorType: comment.user?.type ?? "Unknown",
+        createdAt: comment.created_at,
+        body: isAiComment(comment)
+          ? cleanAssistantComment(comment.body)
+          : String(comment.body ?? "").trim(),
+      }))
+      .filter((comment) => comment.body.length > 0),
+  };
+}
 
-  if (assistantComments.length === 0) {
-    return [
-      "## 概要",
-      "",
-      "このノートには AI による最終回答がなかったため、クローズ時点の issue 本文を保存しています。",
-      "",
-      "## Issue の内容",
-      "",
-      String(issue.body || "本文はありません。").trim(),
-    ].join("\n");
+export function validateKnowledgeBody(rawBody) {
+  let body = String(rawBody ?? "").trim();
+
+  if (body.startsWith("```markdown") && body.endsWith("```")) {
+    body = body.slice("```markdown".length, -3).trim();
   }
 
-  const canonicalComment = assistantComments.reduce((best, candidate) =>
-    scoreComment(candidate) >= scoreComment(best) ? candidate : best,
-  );
-  const canonicalBody = cleanAssistantComment(canonicalComment.body);
-  const canonicalTime = Date.parse(canonicalComment.created_at);
-  const supplements = assistantComments
-    .filter((comment) => Date.parse(comment.created_at) > canonicalTime)
-    .map((comment) => cleanAssistantComment(comment.body))
-    .filter((body) => body.length >= 40 && body !== canonicalBody);
+  if (body.length < 100) {
+    throw new Error("Claude summary is too short to archive as a knowledge note.");
+  }
 
-  if (supplements.length === 0) return canonicalBody;
+  if (/^---\s*$/m.test(body.slice(0, 20)) || /^#\s+/m.test(body)) {
+    throw new Error("Claude summary must not contain YAML front matter or an H1 heading.");
+  }
 
-  const supplementalBody = supplements
-    .map((body, index) => `### 追加回答 ${index + 1}\n\n${body}`)
-    .join("\n\n");
+  const missingSections = REQUIRED_SECTION_PATTERNS
+    .filter(([, pattern]) => !pattern.test(body))
+    .map(([section]) => section);
 
-  return `${canonicalBody}\n\n## 追加の議論\n\n${supplementalBody}`;
+  if (missingSections.length > 0) {
+    throw new Error(`Claude summary is missing required sections: ${missingSections.join(", ")}`);
+  }
+
+  return body;
 }
 
-export function buildMarkdown(issue, comments, archivedAt = new Date().toISOString()) {
-  const labels = (issue.labels ?? []).map((label) =>
-    typeof label === "string" ? label : label.name,
-  );
+export function buildMarkdown(issue, knowledgeBody, archivedAt = new Date().toISOString()) {
+  const labels = labelsFromIssue(issue);
   const category = chooseCategory(labels);
   const lines = [
     "---",
@@ -113,11 +122,12 @@ export function buildMarkdown(issue, comments, archivedAt = new Date().toISOStri
     ...labels.map((label) => `  - ${JSON.stringify(label)}`),
     `closed_at: ${JSON.stringify(issue.closed_at)}`,
     `archived_at: ${JSON.stringify(archivedAt)}`,
+    `generated_by: ${JSON.stringify("claude-code-action")}`,
     "---",
     "",
     `# ${issue.title}`,
     "",
-    buildKnowledgeBody(issue, comments),
+    validateKnowledgeBody(knowledgeBody),
     "",
   ];
 
@@ -152,35 +162,86 @@ async function fetchIssueComments(repository, issueNumber, token) {
   return comments;
 }
 
-async function main() {
+async function loadEvent() {
   const eventPath = process.env.GITHUB_EVENT_PATH;
-  const repository = process.env.GITHUB_REPOSITORY;
-  const token = process.env.GITHUB_TOKEN;
 
-  if (!eventPath || !repository || !token) {
-    throw new Error("GITHUB_EVENT_PATH, GITHUB_REPOSITORY and GITHUB_TOKEN are required.");
+  if (!eventPath) {
+    throw new Error("GITHUB_EVENT_PATH is required.");
   }
 
   const event = JSON.parse(await readFile(eventPath, "utf8"));
-  const issue = event.issue;
-
-  if (event.action !== "closed" || !issue?.number) {
+  if (event.action !== "closed" || !event.issue?.number) {
     throw new Error("This script only accepts an issues.closed event payload.");
   }
 
-  const comments = await fetchIssueComments(repository, issue.number, token);
-  const { category, markdown } = buildMarkdown(issue, comments);
-  const relativePath = path.join("notes", category, `${issue.number}.md`);
+  return event;
+}
+
+function archivePath(issue) {
+  const category = chooseCategory(labelsFromIssue(issue));
+  return path.join("notes", category, `${issue.number}.md`);
+}
+
+async function writeOutputs(outputs) {
+  if (!process.env.GITHUB_OUTPUT) return;
+
+  const body = Object.entries(outputs)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("\n");
+  await appendFile(process.env.GITHUB_OUTPUT, `${body}\n`, "utf8");
+}
+
+async function prepare() {
+  const repository = process.env.GITHUB_REPOSITORY;
+  const token = process.env.GITHUB_TOKEN;
+
+  if (!repository || !token) {
+    throw new Error("GITHUB_REPOSITORY and GITHUB_TOKEN are required.");
+  }
+
+  const event = await loadEvent();
+  const comments = await fetchIssueComments(repository, event.issue.number, token);
+  const context = buildIssueContext(event.issue, comments);
+  const contextDirectory = process.cwd();
+  const contextPath = path.join(contextDirectory, ".closed-issue-context.json");
+
+  await mkdir(contextDirectory, { recursive: true });
+  await writeFile(contextPath, `${JSON.stringify(context, null, 2)}\n`, "utf8");
+  await writeOutputs({ context_path: contextPath, path: archivePath(event.issue) });
+  console.log(`Prepared issue #${event.issue.number} context with ${comments.length} comment(s).`);
+}
+
+async function finalize() {
+  const event = await loadEvent();
+  const structuredOutput = process.env.CLAUDE_STRUCTURED_OUTPUT;
+
+  if (!structuredOutput) {
+    throw new Error("CLAUDE_STRUCTURED_OUTPUT is required.");
+  }
+
+  let result;
+  try {
+    result = JSON.parse(structuredOutput);
+  } catch (error) {
+    throw new Error(`Failed to parse Claude structured output: ${error.message}`);
+  }
+
+  const relativePath = archivePath(event.issue);
   const outputPath = path.join(process.cwd(), relativePath);
+  const { markdown } = buildMarkdown(event.issue, result.markdown);
 
   await mkdir(path.dirname(outputPath), { recursive: true });
   await writeFile(outputPath, markdown, "utf8");
+  await writeOutputs({ path: relativePath });
+  console.log(`Archived Claude summary for issue #${event.issue.number} to ${relativePath}.`);
+}
 
-  if (process.env.GITHUB_OUTPUT) {
-    await appendFile(process.env.GITHUB_OUTPUT, `path=${relativePath}\n`, "utf8");
-  }
+async function main() {
+  const command = process.argv[2];
 
-  console.log(`Archived issue #${issue.number} to ${relativePath}.`);
+  if (command === "prepare") return prepare();
+  if (command === "finalize") return finalize();
+  throw new Error('Expected command "prepare" or "finalize".');
 }
 
 const isDirectExecution = process.argv[1]
