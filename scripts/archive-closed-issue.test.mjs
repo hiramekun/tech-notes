@@ -71,6 +71,29 @@ test("validateKnowledgeBody requires the standard note sections", () => {
   assert.throws(() => validateKnowledgeBody("## 概要\n\n短い本文"), /too short/);
 });
 
+test("validateKnowledgeBody ignores heading-like shell comments in fenced code", () => {
+  const bodyWithShellComment = knowledgeBody.replace(
+    "## 詳細",
+    [
+      "## 詳細",
+      "",
+      "```bash",
+      "# プロジェクトの初期化",
+      "cdk8s init typescript-app",
+      "```",
+    ].join("\n"),
+  );
+
+  assert.equal(validateKnowledgeBody(bodyWithShellComment), bodyWithShellComment);
+});
+
+test("validateKnowledgeBody still rejects an H1 outside fenced code", () => {
+  assert.throws(
+    () => validateKnowledgeBody(`${knowledgeBody}\n\n# 追加の見出し`),
+    /must not contain YAML front matter or an H1 heading/,
+  );
+});
+
 test("buildMarkdown combines deterministic metadata with Claude output", () => {
   const result = buildMarkdown(issue, knowledgeBody, "2026-07-22T04:00:00Z");
   assert.equal(result.category, "frontend");

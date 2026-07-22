@@ -83,6 +83,32 @@ export function buildIssueContext(issue, comments) {
   };
 }
 
+function stripFencedCodeBlocks(markdown) {
+  const lines = markdown.split("\n");
+  let fence = null;
+
+  return lines
+    .map((line) => {
+      if (!fence) {
+        const openingFence = line.match(/^[ \t]{0,3}(`{3,}|~{3,})/);
+        if (!openingFence) return line;
+
+        fence = {
+          character: openingFence[1][0],
+          length: openingFence[1].length,
+        };
+        return "";
+      }
+
+      const closingFence = new RegExp(
+        `^[ \\t]{0,3}${fence.character}{${fence.length},}[ \\t]*$`,
+      );
+      if (closingFence.test(line)) fence = null;
+      return "";
+    })
+    .join("\n");
+}
+
 export function validateKnowledgeBody(rawBody) {
   let body = String(rawBody ?? "").trim();
 
@@ -94,12 +120,14 @@ export function validateKnowledgeBody(rawBody) {
     throw new Error("Claude summary is too short to archive as a knowledge note.");
   }
 
-  if (/^---\s*$/m.test(body.slice(0, 20)) || /^#\s+/m.test(body)) {
+  const structuralBody = stripFencedCodeBlocks(body);
+
+  if (/^---\s*$/m.test(structuralBody.slice(0, 20)) || /^#\s+/m.test(structuralBody)) {
     throw new Error("Claude summary must not contain YAML front matter or an H1 heading.");
   }
 
   const missingSections = REQUIRED_SECTION_PATTERNS
-    .filter(([, pattern]) => !pattern.test(body))
+    .filter(([, pattern]) => !pattern.test(structuralBody))
     .map(([section]) => section);
 
   if (missingSections.length > 0) {
