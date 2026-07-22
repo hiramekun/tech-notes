@@ -14,6 +14,31 @@
 
 ノートの検索はラベルと issue 検索を使う。
 
+## Knowledge Cards
+
+クローズ済み issue の最終回答を、カード形式でランダムに閲覧できる GitHub Pages を提供する。
+
+- issue をクローズすると、Claude Code Actions が本文と全コメントを読み直して1つの技術ノートへ再構成する
+- 後から追加された訂正・補足を反映し、重複した説明や会話形式のやり取りを整理する
+- 生成本文と、スクリプトで確定するメタデータを組み合わせて `notes/<ジャンル>/<issue 番号>.md` に保存する
+- GitHub Pages ではカードを左右へスワイプするか、左右の矢印キーで次のノートへ進める
+- 全カードを一巡するまでは同じカードを再表示せず、一巡後に再シャッフルする
+
+ローカルで確認する場合:
+
+```bash
+npm install
+npm run dev
+```
+
+### GitHub Pages の初期設定
+
+1. リポジトリの **Settings → Pages** を開く
+2. **Build and deployment → Source** で **GitHub Actions** を選ぶ
+3. `Deploy GitHub Pages` workflow を手動実行するか、サイト関連ファイルを `main` にマージする
+
+通常の push では `.github/workflows/pages.yml` がサイトをデプロイする。issue のクローズ時は `.github/workflows/archive-closed-issue.yml` が Markdown の保存、コミット、サイトの再ビルド、デプロイまでを行う。
+
 ## ラベル
 
 - **ジャンル**: `frontend` / `backend` / `infra` / `database` / `language` / `ai-ml` / `security` / `devops` / `architecture` / `cs-fundamentals`
