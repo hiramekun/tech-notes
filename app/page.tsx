@@ -3,15 +3,12 @@ import { SiteHeader } from "@/components/site-header";
 
 export default function Home() {
   return (
-    <main className="site-shell">
-      <div className="ambient ambient-one" />
-      <div className="ambient ambient-two" />
-
+    <main className="app-shell">
       <SiteHeader />
 
       <KnowledgeDeck />
 
-      <footer className="site-footer">
+      <footer className="app-footer">
         <span>ISSUES → NOTES → REPORTS</span>
         <span>Built from closed GitHub issues.</span>
       </footer>

@@ -23,6 +23,8 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
 
   useEffect(() => {
     let cancelled = false;
+    // M3 のカラースキームに合わせて mermaid のテーマも切り替える
+    const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     async function renderDiagram() {
       try {
@@ -30,7 +32,7 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
         mermaid.initialize({
           startOnLoad: false,
           securityLevel: "strict",
-          theme: "neutral",
+          theme: darkQuery.matches ? "dark" : "neutral",
           fontFamily: "inherit",
         });
         const result = await mermaid.render(mermaidId, chart);
@@ -41,8 +43,11 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
     }
 
     renderDiagram();
+    darkQuery.addEventListener("change", renderDiagram);
+
     return () => {
       cancelled = true;
+      darkQuery.removeEventListener("change", renderDiagram);
     };
   }, [chart, mermaidId]);
 
@@ -127,6 +132,7 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
                 <div className="diagram-lightbox-header-actions">
                   <div className="diagram-lightbox-controls" role="group" aria-label="図の拡大率">
                     <button
+                      className="md-icon-button"
                       type="button"
                       onClick={() => setZoom((currentZoom) => Math.max(MIN_ZOOM, currentZoom - ZOOM_STEP))}
                       disabled={zoom <= MIN_ZOOM}
@@ -135,7 +141,7 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
                       <ZoomOut aria-hidden="true" size={18} />
                     </button>
                     <button
-                      className="diagram-zoom-reset"
+                      className="md-icon-button diagram-zoom-reset"
                       type="button"
                       onClick={() => setZoom(MIN_ZOOM)}
                       disabled={zoom === MIN_ZOOM}
@@ -145,6 +151,7 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
                       {Math.round(zoom * 100)}%
                     </button>
                     <button
+                      className="md-icon-button"
                       type="button"
                       onClick={() => setZoom((currentZoom) => Math.min(MAX_ZOOM, currentZoom + ZOOM_STEP))}
                       disabled={zoom >= MAX_ZOOM}
@@ -154,7 +161,7 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
                     </button>
                   </div>
                   <button
-                    className="diagram-lightbox-close"
+                    className="md-icon-button md-icon-button--tonal"
                     type="button"
                     autoFocus
                     onClick={() => setExpanded(false)}

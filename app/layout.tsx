@@ -11,7 +11,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f2ede3",
+  // M3 の surface ロール (light / dark)
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafaee" },
+    { media: "(prefers-color-scheme: dark)", color: "#12140e" },
+  ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

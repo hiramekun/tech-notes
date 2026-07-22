@@ -62,8 +62,8 @@ export function ReportIndex() {
           <h1 id="report-index-title">全てのノート</h1>
           <p>{loading ? "ノートを読み込んでいます。" : `${notes.length}件のノートを、新しい順に並べています。`}</p>
         </div>
-        <Link className="random-report-link" href="/">
-          <Shuffle aria-hidden="true" size={17} />
+        <Link className="md-button md-button--filled random-report-link" href="/">
+          <Shuffle aria-hidden="true" size={18} />
           ランダムに読む
         </Link>
       </header>
@@ -90,7 +90,7 @@ export function ReportIndex() {
             >
               <div className="report-title-card-top">
                 <span className="report-index-number">{String(index + 1).padStart(2, "0")}</span>
-                <span className={`category category-${note.category}`}>
+                <span className={`md-chip md-chip--small category category-${note.category}`}>
                   {categoryNames[note.category] ?? note.category}
                 </span>
               </div>
