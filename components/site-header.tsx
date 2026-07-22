@@ -5,9 +5,14 @@ export function SiteHeader() {
   return (
     <header className="top-app-bar">
       <Link className="brand" href="/reports" aria-label="すべての記事を見る">
-        <span className="brand-mark" aria-hidden="true">
-          T/N
-        </span>
+        {/* eslint-disable-next-line @next/next/no-img-element -- 静的エクスポートのため next/image は使わない */}
+        <img
+          className="brand-mark"
+          src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/avatar.png`}
+          alt=""
+          width={40}
+          height={40}
+        />
         <span>
           <strong>Tech Notes</strong>
           <small>Report archive</small>

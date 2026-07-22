@@ -255,17 +255,12 @@ a {
 }
 
 .brand-mark {
-  display: grid;
   width: 40px;
   height: 40px;
   flex: none;
-  place-items: center;
   border-radius: var(--md-sys-shape-corner-full);
   background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  font-size: var(--md-sys-typescale-label-large-size);
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  object-fit: cover;
 }
 
 .brand strong,
