@@ -1042,32 +1042,24 @@ a {
 
 .report-index-heading {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  gap: 28px;
-  margin-bottom: 28px;
-  padding-bottom: 24px;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
-}
-
-.index-eyebrow {
-  margin: 0 0 8px;
-  color: var(--md-sys-color-primary);
-  font-size: var(--md-sys-typescale-label-large-size);
-  font-weight: 500;
-  letter-spacing: 0.1em;
 }
 
 .report-index-heading h1 {
   margin: 0;
-  font-size: clamp(var(--md-sys-typescale-headline-medium-size), 5vw, var(--md-sys-typescale-display-small-size));
+  font-size: var(--md-sys-typescale-title-large-size);
   font-weight: 500;
   letter-spacing: 0;
-  line-height: 1.2;
+  line-height: var(--md-sys-typescale-title-large-line-height);
 }
 
 .report-index-heading > div > p:last-child {
-  margin: 12px 0 0;
+  margin: 4px 0 0;
   color: var(--md-sys-color-on-surface-variant);
   font-size: var(--md-sys-typescale-body-medium-size);
 }
@@ -1384,12 +1376,8 @@ a {
     padding-bottom: 16px;
   }
 
-  .report-index-heading h1 {
-    font-size: var(--md-sys-typescale-headline-medium-size);
-  }
-
   .report-index-heading > div > p:last-child {
-    margin-top: 8px;
+    margin-top: 4px;
   }
 
   .random-report-link {

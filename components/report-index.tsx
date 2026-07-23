@@ -101,7 +101,6 @@ export function ReportIndex() {
     <section className="report-index" aria-labelledby="report-index-title">
       <header className="report-index-heading">
         <div>
-          <p className="index-eyebrow">NOTE INDEX</p>
           <h1 id="report-index-title">全てのノート</h1>
           <p aria-live="polite">{summaryText}</p>
         </div>
