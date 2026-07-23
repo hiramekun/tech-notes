@@ -1072,6 +1072,108 @@ a {
   font-size: var(--md-sys-typescale-body-medium-size);
 }
 
+/* --- 検索 / カテゴリ絞り込みツールバー --- */
+
+.index-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.index-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 420px;
+}
+
+.index-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+}
+
+.index-search input {
+  width: 100%;
+  height: 48px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-surface);
+  padding: 0 44px;
+  color: var(--md-sys-color-on-surface);
+  font: inherit;
+  font-size: var(--md-sys-typescale-body-large-size);
+  transition: border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.index-search input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.index-search input:focus {
+  border-color: var(--md-sys-color-primary);
+  outline: 1px solid var(--md-sys-color-primary);
+}
+
+/* 検索インプットのブラウザ標準クリアボタンは自前のものに置き換える */
+.index-search input[type="search"]::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.index-search-clear {
+  position: absolute;
+  right: 8px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+}
+
+.index-search-clear:hover {
+  background: var(--md-sys-color-surface-container-highest);
+}
+
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* M3 filter chip: 未選択は outlined、選択で tonal + チェック */
+.category-filter-chip {
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  transition:
+    background var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+    border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.category-filter-chip[aria-pressed="true"] {
+  border-color: transparent;
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.category-filter-count {
+  color: inherit;
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.index-message .md-button {
+  margin-top: 12px;
+}
+
 .report-grid {
   display: grid;
   gap: 16px;
