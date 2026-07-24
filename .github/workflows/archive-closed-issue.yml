@@ -17,6 +17,10 @@ concurrency:
 
 jobs:
   archive:
+    # OWNER 本人が作成した issue の close のみアーカイブする。
+    # これがないと、外部の人が自作 issue を close するだけで
+    # Claude の利用枠を消費し、生成ノートを公開サイトに載せられてしまう。
+    if: github.event.issue.author_association == 'OWNER'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
