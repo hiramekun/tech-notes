@@ -9,6 +9,7 @@ on:
 permissions:
   actions: write
   contents: write
+  id-token: write
 
 concurrency:
   # 定期実行同士の重複起動を防ぐ。archive ジョブとの push 競合は
