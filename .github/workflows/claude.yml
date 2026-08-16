@@ -30,6 +30,10 @@ jobs:
           # issue の新規作成（タイトル・本文の @claude）のときだけ CLAUDE.md の
           # 決まったフォーマットに従わせる。それ以降の issue コメントへの返信では
           # フォーマットを制限せず、コメント内容に応じて自然に返信する。
-          prompt: ${{ github.event_name == 'issue_comment' && 'これは既存の issue に付いたフォローアップコメントへの返信です。CLAUDE.md の「コメントのフォーマット」で定められた 4 セクション構成（概要・何が嬉しいのか・詳細・参考リンク）に従う必要はありません。ユーザーのコメント内容に応じて、自然な形で技術的に返信してください。返信の前に `gh issue view <番号> --comments` で議論の流れを把握すること。新規 issue のような重複・関連ノートの一括確認やタイトルの変更は不要です。必ず日本語で回答し、不確かな情報は不確かであると明記してください。' || '' }}
+          prompt: ${{ github.event_name == 'issue_comment' && 'これは既存の issue に付いたフォローアップコメントへの返信です。CLAUDE.md の「コメントのフォーマット」で定められた 4 セクション構成（概要・何が嬉しいのか・詳細・参考リンク）に従う必要はありません。ユーザーのコメント内容に応じて、自然な形で技術的に返信してください。返信の前に `gh issue view <番号> --comments` で議論の流れを把握すること。新規 issue のような重複・関連ノートの一括確認やタイトルの変更は不要です。必ず日本語で回答し、不確かな情報は不確かであると明記してください。回答は必ず issue のコメントとして残すこと。最終メッセージに回答本文をそのまま書けば追跡コメントに反映されるので、`gh issue comment` で二重投稿しないこと。' || '' }}
+          # issue_comment は prompt 指定により agent モードになり、追跡コメントが作られない。
+          # その場合 Claude が gh issue comment を呼ばないと回答がどこにも残らないため、
+          # track_progress で tag モードを強制して出力を必ずコメントとして投稿させる。
+          track_progress: ${{ github.event_name == 'issue_comment' }}
           claude_args: |
             --allowedTools "Bash(gh label list:*),Bash(gh issue list:*),Bash(gh issue view:*),Bash(gh issue comment:*),Bash(gh issue edit:*),WebFetch,WebSearch"
