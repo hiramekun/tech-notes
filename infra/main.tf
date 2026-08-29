@@ -54,6 +54,12 @@ locals {
         type  = "plain_text"
         value = var.team_domain
       }
+      # <project>.pages.dev を無効化する設定は Pages に無いので、
+      # ルートの _middleware がこのホスト以外を 301 で送り返す
+      CANONICAL_HOST = {
+        type  = "plain_text"
+        value = var.app_hostname
+      }
       # aud は Access アプリケーションの read-only 属性。
       # ダッシュボードから手で控えて貼る作業がここで消える
       ACCESS_AUD = {
