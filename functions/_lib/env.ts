@@ -8,6 +8,12 @@ export interface Env {
   /** Access アプリケーションの AUD タグ。Terraform が自動で流し込む */
   ACCESS_AUD: string;
   /**
+   * 正規のホスト名 (例: notes.example.com)。
+   * これ以外のホストで来たリクエストは _middleware.ts が 301 で送り返す。
+   * 未設定なら素通しするので、ローカル開発では省略してよい。
+   */
+  CANONICAL_HOST?: string;
+  /**
    * ローカル開発でのみ使う抜け道。値が入っていると Access の JWT 検証を飛ばし、
    * このメールアドレスのユーザーとして扱う。
    *
