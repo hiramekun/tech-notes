@@ -7,6 +7,12 @@
 | ノートを読む | <https://notes.hiramekun.dev/> | 誰でも |
 | 暗記モード | <https://notes.hiramekun.dev/study/> | 自分のみ（Cloudflare Access） |
 
+## システム構成
+
+[![tech-notes のシステム構成図](docs/system-architecture.svg)](docs/system-architecture.md)
+
+図の詳細とテキストによる説明は [システム構成ドキュメント](docs/system-architecture.md) を参照。
+
 ## 使い方
 
 1. 知りたい技術トピックで issue を作成する
