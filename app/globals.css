@@ -1510,12 +1510,12 @@ a {
   font-size: var(--md-sys-typescale-label-small-size);
 }
 
-/* 裏面: ノート本文。長いので中だけスクロールさせる */
-.study-answer {
-  max-height: min(52vh, 520px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
+/*
+ * 裏面のノート本文には、高さの制約もスクロールも与えない。
+ * .knowledge-card 自体が overflow-y: auto でスクロールするので、
+ * ここに二段目のスクロール領域を作ると、内側がカードの高さより低い位置で
+ * 止まり、その下に空白が残ってしまう。
+ */
 
 .study-missing {
   color: var(--md-sys-color-on-surface-variant);
