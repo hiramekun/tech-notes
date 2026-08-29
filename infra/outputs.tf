@@ -10,5 +10,5 @@ output "access_aud" {
 
 output "site_url" {
   description = "公開 URL"
-  value       = "https://${local.host}"
+  value       = "https://${var.app_hostname}"
 }
