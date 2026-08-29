@@ -9,6 +9,6 @@ output "access_aud" {
 }
 
 output "site_url" {
-  description = "公開 URL"
+  description = "公開 URL (カスタムドメインの接続はダッシュボードで行う)"
   value       = "https://${var.app_hostname}"
 }

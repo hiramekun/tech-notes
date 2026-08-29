@@ -207,6 +207,8 @@ export function StudyDeck() {
     } catch (error) {
       if (error instanceof SessionExpiredError && recoverFromExpiredSession()) return;
       if (error instanceof SessionExpiredError) setMessage(REAUTH_FAILED);
+      // ApiError はサーバが返した理由をそのまま出す(401 なら設定の問題と分かる)
+      if (error instanceof ApiError) setMessage(error.message);
       setStatus("error");
     }
   }, []);

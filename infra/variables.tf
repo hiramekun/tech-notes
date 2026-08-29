@@ -17,6 +17,11 @@ variable "app_hostname" {
   description = "アプリを公開するホスト名 (例: notes.example.com)。Cloudflare のゾーンに属している必要がある"
 }
 
+variable "zone_id" {
+  type        = string
+  description = "app_hostname のドメインが属する Cloudflare ゾーンの ID"
+}
+
 variable "allowed_email" {
   type        = string
   description = "Access を通す Google アカウントのメールアドレス。これがアローリストの実体"

@@ -22,6 +22,13 @@ R2 を Terraform の state 置き場に使う場合も同様
 
 1. アカウントを作り、**Account ID** を控える。
 2. Zero Trust を有効化し、**チームドメイン**（`<team>.cloudflareaccess.com`）を決める。
+   決めたら、その綴りが本当に有効かを確認しておく。ここを取り違えると、ログインには
+   成功するのに Functions が JWKS を取得できず、すべての API が 401 になる。
+
+   ```bash
+   curl -o /dev/null -w '%{http_code}\n' https://<team>.cloudflareaccess.com/cdn-cgi/access/certs
+   # 200 なら実在する。404 なら綴りが違う
+   ```
    Terraform では作れず、後から変えるのも面倒なので名前は慎重に。
 3. 無料プランを選び、支払い方法を登録する。
 4. **ドメインを用意する。** Domain Registration → Register Domains で取得すると、
@@ -35,11 +42,17 @@ R2 を Terraform の state 置き場に使う場合も同様
 
 ## 2. Terraform 用の API トークン（ダッシュボード）
 
-Account 単位で次の権限を持つトークンを発行する。
+トークンには 2 つのポリシーが要る。新しい権限ピッカーでは、ポリシーごとに
+対象リソース（アカウント全体 / 指定ドメイン）を選ぶと、選べる権限の一覧が入れ替わる。
 
-- D1 : Edit
-- Cloudflare Pages : Edit
-- Access: Apps and Policies : Edit
+| ポリシー | 対象 | 権限 |
+|---|---|---|
+| 1 | アカウント全体 | D1 : Edit / Cloudflare Pages : Edit / Access: Apps and Policies : Edit |
+| 2 | 指定ドメイン（app_hostname のゾーン） | DNS : Edit |
+
+2 つ目は DNS レコードを Terraform で管理するために要る。DNS の権限は Zone スコープなので、
+「アカウント全体」のポリシーの一覧には出てこない。既存のポリシーの対象を変えるのではなく、
+**ポリシーを追加**すること（対象を変えると 1 つ目の権限が外れる）。
 
 発行した値は環境変数 `CLOUDFLARE_API_TOKEN` として渡す。tf ファイルには書かない。
 
@@ -151,3 +164,16 @@ v5 プロバイダは OpenAPI から自動生成されており、「省略し�
 | `domain does not belong to zone` | Access は自ゾーンのホスト名しか受け付けない | `*.pages.dev` をやめて独自ドメインにした |
 | `read_replication => Expected object, received null` | 省略した属性を更新時に null で送る | `read_replication = { mode = "disabled" }` を明示 |
 | `fail_open` を production と preview で揃えろ | production しか定義していなかった | 設定を `locals` に切り出して両方へ渡す |
+| カスタムドメインが `pending` のまま（`CNAME record not set`）、サイトは 522 | proxied な CNAME が先に無いと Pages の検証が走らない | `cloudflare_dns_record` を先に作る（`depends_on` 済み） |
+| ログインは通るのに API が全部 401 | Pages の環境変数はデプロイ時に確定するため、`terraform apply` だけでは反映されない | 再デプロイする。設定値とデプロイが持つ値は API で別々に確認できる |
+
+最後の 2 つは、プロジェクト設定と実際に動いているデプロイを**別々に**見ると切り分けが早い。
+
+```bash
+# プロジェクト設定
+curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+  "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/tech-notes"
+# 稼働中のデプロイが持つ値
+curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+  "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/tech-notes/deployments?per_page=3"
+```

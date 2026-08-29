@@ -31,12 +31,21 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     headers: init?.body ? { "content-type": "application/json", ...init.headers } : init?.headers,
   });
 
-  if (response.type === "opaqueredirect" || response.status === 0 || response.status === 401) {
+  // Access のログイン画面へのリダイレクトはクロスオリジンなので opaqueredirect になる
+  if (response.type === "opaqueredirect" || response.status === 0) {
     throw new SessionExpiredError();
   }
 
   if (!response.ok) {
-    const body = (await response.json().catch(() => null)) as { message?: string } | null;
+    const body = (await response.json().catch(() => null)) as { error?: string; message?: string } | null;
+
+    // 401 でも、自前の API が返したものか Access が返したものかで意味が違う。
+    // 前者は「JWT を検証できなかった」で、再ログインしても直らない(設定の問題)。
+    // 一律にセッション切れ扱いすると、原因と関係ないメッセージを出してしまう。
+    if (response.status === 401 && !body?.error) {
+      throw new SessionExpiredError();
+    }
+
     throw new ApiError(response.status, body?.message ?? `リクエストに失敗しました (${response.status})`);
   }
 

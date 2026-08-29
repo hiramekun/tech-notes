@@ -146,10 +146,28 @@ resource "cloudflare_pages_project" "site" {
   }
 }
 
+# カスタムドメインの DNS レコード。
+#
+# Pages のカスタムドメインは、API から登録しただけでは
+# "CNAME record not set" のまま検証が通らない。proxied な CNAME が
+# 先に存在してはじめて Cloudflare 側の検証が走り、active になる
+# (ダッシュボードのフローはこの 2 つを一体で行っている)。
+resource "cloudflare_dns_record" "site" {
+  zone_id = var.zone_id
+  name    = var.app_hostname
+  type    = "CNAME"
+  content = cloudflare_pages_project.site.subdomain
+  proxied = true # DNS-only にすると Cloudflare のエッジを通らず Access が効かない
+  ttl     = 1    # proxied のときは自動(1)
+  comment = "Cloudflare Pages: ${var.project_name}"
+}
+
 # Pages プロジェクトにカスタムドメインを繋ぐ。
-# これで <app_hostname> が Pages を指し、Access の対象にもなる。
 resource "cloudflare_pages_domain" "site" {
   account_id   = var.account_id
   project_name = cloudflare_pages_project.site.name
   name         = var.app_hostname
+
+  # レコードが先にないと検証が通らない
+  depends_on = [cloudflare_dns_record.site]
 }

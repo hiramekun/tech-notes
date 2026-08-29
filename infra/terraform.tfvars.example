@@ -2,6 +2,7 @@
 # terraform.tfvars は .gitignore 済み。
 account_id    = "0123456789abcdef0123456789abcdef"
 app_hostname  = "notes.example.com"   # Cloudflare のゾーンに属するホスト名
+zone_id       = "ゾーンの ID"
 allowed_email = "you@example.com"
 team_domain   = "your-team.cloudflareaccess.com"
 github_owner  = "hiramekun"
