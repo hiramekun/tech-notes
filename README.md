@@ -21,8 +21,11 @@
 - issue をクローズすると、Claude Code Actions が本文と全コメントを読み直して1つの技術ノートへ再構成する
 - 後から追加された訂正・補足を反映し、重複した説明や会話形式のやり取りを整理する
 - 生成本文と、スクリプトで確定するメタデータを組み合わせて `notes/<ジャンル>/<issue 番号>.md` に保存する
-- GitHub Pages ではカードを左右へスワイプするか、左右の矢印キーで次のノートへ進める
+- カードを左右へスワイプするか、左右の矢印キーで次のノートへ進める
 - 全カードを一巡するまでは同じカードを再表示せず、一巡後に再シャッフルする
+
+サイトは Cloudflare Pages でホストする。カードの閲覧は誰でもできる公開ページで、
+学習機能（`/study` と `/api`）だけを Cloudflare Access で自分ひとりに絞っている。
 
 ローカルで確認する場合:
 
@@ -31,13 +34,29 @@ npm install
 npm run dev
 ```
 
-### GitHub Pages の初期設定
+## 暗記モード
 
-1. リポジトリの **Settings → Pages** を開く
-2. **Build and deployment → Source** で **GitHub Actions** を選ぶ
-3. `Deploy GitHub Pages` workflow を手動実行するか、サイト関連ファイルを `main` にマージする
+`/study` は Anki のような間隔反復（SRS）で出題する画面。タイトルだけを見て中身を思い出し、
+答え合わせをしてから左右にスワイプする。
 
-通常の push では `.github/workflows/pages.yml` がサイトをデプロイする。issue のクローズ時は `.github/workflows/archive-closed-issue.yml` が Markdown の保存、コミット、サイトの再ビルド、デプロイまでを行う。
+- **右スワイプ = 覚えている**（FSRS の Good）。安定度が伸び、次の出題まで間隔が開く
+- **左スワイプ = 覚えていない**（FSRS の Again）。安定度が縮み、当日中にもう一度出る
+
+スケジューラは Anki 23.10 以降の既定アルゴリズムである FSRS-6（`ts-fsrs`）。
+学習状態は Cloudflare D1 に保存する。オフラインでもスワイプでき、復帰時にまとめて送られる。
+
+設計の全体は [docs/setup-cloudflare.md](docs/setup-cloudflare.md) と、リポジトリ内の設計メモを参照。
+
+### Cloudflare の初期設定
+
+[docs/setup-cloudflare.md](docs/setup-cloudflare.md) を参照。ダッシュボードでの操作が要るのは
+アカウントと Zero Trust の初期設定、API トークンの発行、GitHub App の連携まで。
+インフラそのものは `infra/` の Terraform で作る。
+
+サイトのデプロイは Cloudflare Pages の Git 連携が push を見て自動で行う。
+`notes/` が変わったときは `.github/workflows/sync-d1.yml` が D1 のマイグレーションと
+ノートの同期を行う。issue のクローズ時は `.github/workflows/archive-closed-issue.yml` が
+Markdown の保存とコミットまでを行い、その push が上記 2 つを起こす。
 
 ## ラベル
 

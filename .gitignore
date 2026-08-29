@@ -5,3 +5,17 @@ out/
 public/data/notes.json
 .closed-issue-context.json
 npm-debug.log*
+
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/terraform.tfvars
+infra/backend.hcl
+infra/.terraform.lock.hcl
+.wrangler/
+tsconfig.tsbuildinfo
+
+# mise のローカル設定(認証情報を置く)
+mise.local.toml
+.mise.local.toml

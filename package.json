@@ -8,11 +8,14 @@
     "prebuild": "node scripts/build-notes-index.mjs",
     "build": "next build",
     "lint": "eslint .",
-    "test": "node --test scripts/*.test.mjs"
+    "test": "node --test scripts/*.test.mjs",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p functions/tsconfig.json"
   },
   "dependencies": {
+    "drizzle-orm": "0.45.2",
     "gray-matter": "4.0.3",
     "highlight.js": "11.11.1",
+    "jose": "6.2.10",
     "lowlight": "3.3.0",
     "lucide-react": "1.25.0",
     "mermaid": "11.16.0",
@@ -23,15 +26,18 @@
     "react-markdown": "10.1.0",
     "rehype-highlight": "7.0.2",
     "rehype-sanitize": "6.0.0",
-    "remark-gfm": "4.0.1"
+    "remark-gfm": "4.0.1",
+    "ts-fsrs": "5.4.1"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "5.20260829.1",
     "@types/node": "26.1.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.11",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "wrangler": "4.127.1"
   },
   "overrides": {
     "postcss": "8.5.10",

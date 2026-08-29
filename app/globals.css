@@ -1440,3 +1440,101 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ------------------------------------------------------------------ *
+ * 暗記モード (/study)
+ * 閲覧用のカードと同じ骨格を使い、想起 → 答え合わせ → 評価の導線だけ足す
+ * ------------------------------------------------------------------ */
+
+.study-status-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.study-offline {
+  color: var(--md-sys-color-on-secondary-container);
+  background: var(--md-sys-color-secondary-container);
+}
+
+/* 暗記度。0〜100 を 5 段階に丸めて色を変える */
+.study-mastery {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-label-small-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.study-mastery-bar {
+  display: block;
+  width: 64px;
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-surface-container-highest);
+}
+
+.study-mastery-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--md-sys-color-primary);
+  transition: width var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+}
+
+.study-mastery-bar[data-level="0"] > span,
+.study-mastery-bar[data-level="1"] > span {
+  background: var(--md-sys-color-secondary);
+}
+
+.study-mastery-bar[data-level="4"] > span {
+  background: var(--md-sys-color-tertiary);
+}
+
+/* 表面: タイトルだけを見せて思い出してもらう */
+.study-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 220px;
+  text-align: center;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.study-prompt small {
+  color: var(--md-sys-color-outline);
+  font-size: var(--md-sys-typescale-label-small-size);
+}
+
+/* 裏面: ノート本文。長いので中だけスクロールさせる */
+.study-answer {
+  max-height: min(52vh, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.study-missing {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.study-forgot:not(:disabled) {
+  color: var(--md-sys-color-error);
+  border-color: var(--md-sys-color-error);
+}
+
+.study-remembered:disabled,
+.study-forgot:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+.study-message {
+  margin: 12px auto 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-body-small-size);
+  text-align: center;
+}
