@@ -129,7 +129,7 @@ function StudyCard({ card, note, revealed, direction, onReveal, onGrade }: Study
       </header>
 
       {revealed ? (
-        <div className="card-content study-answer">
+        <div className="card-content">
           {note ? (
             <MarkdownContent content={note.content} />
           ) : (
