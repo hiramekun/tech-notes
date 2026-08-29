@@ -1,0 +1,20 @@
+{
+  // D1 のマイグレーション適用専用の設定。
+  //   npx wrangler d1 migrations apply tech-notes --remote -c wrangler.d1.jsonc
+  //
+  // ファイル名を wrangler.jsonc にしていないのは意図的。Cloudflare Pages は
+  // ルートの wrangler.toml / wrangler.json / wrangler.jsonc を自動検出して
+  // ランタイム設定として使うため、置くと Terraform が管理している
+  // バインディングと環境変数が二重管理になる。バインディングの正は Terraform 側。
+  "name": "tech-notes",
+  "compatibility_date": "2026-01-01",
+  "migrations_dir": "migrations",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tech-notes",
+      // terraform output d1_database_id の値を入れる
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+    }
+  ]
+}

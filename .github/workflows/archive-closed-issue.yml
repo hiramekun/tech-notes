@@ -88,8 +88,10 @@ jobs:
           git commit -m "Archive issue #${ISSUE_NUMBER}"
           git push origin "HEAD:${DEFAULT_BRANCH}"
 
-      - name: Trigger GitHub Pages deployment
+      # bot の push では workflow が連鎖しないので、明示的に叩く。
+      # サイトのデプロイは Cloudflare Pages の Git 連携が拾う
+      - name: Trigger the D1 sync
         env:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run pages.yml --ref "${DEFAULT_BRANCH}"
+        run: gh workflow run sync-d1.yml --ref "${DEFAULT_BRANCH}"

@@ -1,0 +1,6 @@
+# terraform init -backend-config=backend.hcl で渡す。
+# アクセスキーは環境変数 AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY で渡すこと。
+bucket = "tech-notes-tfstate"
+endpoints = {
+  s3 = "https://ACCOUNT_ID.r2.cloudflarestorage.com"
+}

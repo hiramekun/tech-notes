@@ -5,3 +5,13 @@ out/
 public/data/notes.json
 .closed-issue-context.json
 npm-debug.log*
+
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/terraform.tfvars
+infra/backend.hcl
+infra/.terraform.lock.hcl
+.wrangler/
+tsconfig.tsbuildinfo
