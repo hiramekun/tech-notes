@@ -2,6 +2,11 @@
 
 技術ノートのまとめ場所。issue が 1 トピックのノートに対応し、`@claude` メンションで Claude が調査・整理したコメントを残してくれる。
 
+| | URL | 公開範囲 |
+|---|---|---|
+| ノートを読む | <https://notes.hiramekun.dev/> | 誰でも |
+| 暗記モード | <https://notes.hiramekun.dev/study/> | 自分のみ（Cloudflare Access） |
+
 ## 使い方
 
 1. 知りたい技術トピックで issue を作成する
@@ -16,7 +21,10 @@
 
 ## Knowledge Cards
 
-クローズ済み issue の最終回答を、カード形式でランダムに閲覧できる GitHub Pages を提供する。
+クローズ済み issue の最終回答を、カード形式でランダムに閲覧できる。
+公開ページなのでログインは要らない。
+
+<https://notes.hiramekun.dev/>
 
 - issue をクローズすると、Claude Code Actions が本文と全コメントを読み直して1つの技術ノートへ再構成する
 - 後から追加された訂正・補足を反映し、重複した説明や会話形式のやり取りを整理する
@@ -26,6 +34,8 @@
 
 サイトは Cloudflare Pages でホストする。カードの閲覧は誰でもできる公開ページで、
 学習機能（`/study` と `/api`）だけを Cloudflare Access で自分ひとりに絞っている。
+Pages が自動で振る `*.pages.dev` の URL は、`functions/_middleware.ts` が
+上記のホストへ 301 で送り返すので使えない。
 
 ローカルで確認する場合:
 
@@ -36,8 +46,10 @@ npm run dev
 
 ## 暗記モード
 
-`/study` は Anki のような間隔反復（SRS）で出題する画面。タイトルだけを見て中身を思い出し、
-答え合わせをしてから左右にスワイプする。
+<https://notes.hiramekun.dev/study/>
+
+Anki のような間隔反復（SRS）で出題する画面。タイトルだけを見て中身を思い出し、
+答え合わせをしてから左右にスワイプする。**登録した Google アカウントでのみ開ける。**
 
 - **右スワイプ = 覚えている**（FSRS の Good）。安定度が伸び、次の出題まで間隔が開く
 - **左スワイプ = 覚えていない**（FSRS の Again）。安定度が縮み、当日中にもう一度出る
