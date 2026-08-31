@@ -86,6 +86,23 @@ resource "cloudflare_d1_database" "main" {
 }
 
 # --- アクセス制御 ------------------------------------------------------------
+# ログイン方法。One-time PIN は「入力したメールアドレス宛に 6 桁のコードを送り、
+# それを打ち返させる」だけの IdP なので、外部サービスの OAuth 設定が一切要らない。
+# アカウントに自動では追加されないため、ここで明示的に作る。
+#
+# 一方で Zero Trust を有効にすると `cloudflare` 型の IdP(ダッシュボードの
+# アカウントでログインする方式)が最初から 1 つ居る。allowed_idps を書かないと
+# それが唯一の候補になり、auto_redirect_to_identity と相まって
+# dash.cloudflare.com のログイン画面に直行してしまう。
+resource "cloudflare_zero_trust_access_identity_provider" "otp" {
+  account_id = var.account_id
+  name       = "One-time PIN" # ログイン画面に出る表示名
+  type       = "onetimepin"
+
+  # onetimepin に設定項目はないが、config は必須属性なので空オブジェクトを渡す
+  config = {}
+}
+
 resource "cloudflare_zero_trust_access_policy" "only_me" {
   account_id = var.account_id
   name       = "${var.project_name}-only-me"
@@ -108,7 +125,13 @@ resource "cloudflare_zero_trust_access_application" "study" {
     { type = "public", uri = "${local.host}/study" },
   ]
 
-  session_duration          = var.session_duration
+  # 明示しないと「アカウントに存在する IdP 全部」が候補になる。
+  # OTP だけに絞ることで、ログイン画面はメールアドレスの入力欄だけになる
+  allowed_idps = [cloudflare_zero_trust_access_identity_provider.otp.id]
+
+  session_duration = var.session_duration
+
+  # IdP 選択の 1 画面を飛ばす。allowed_idps がちょうど 1 つのときだけ有効
   auto_redirect_to_identity = true
 
   policies = [{

@@ -24,7 +24,7 @@ variable "zone_id" {
 
 variable "allowed_email" {
   type        = string
-  description = "Access を通す Google アカウントのメールアドレス。これがアローリストの実体"
+  description = "Access を通すメールアドレス。One-time PIN の送り先であり、これがアローリストの実体"
 }
 
 variable "team_domain" {

@@ -35,10 +35,14 @@ R2 を Terraform の state 置き場に使う場合も同様
    ゾーンが自動で作られる。すでに持っているドメインを使う場合は Websites → Add a site で
    ゾーンとして追加し、ネームサーバを Cloudflare に向ける。
    `infra/terraform.tfvars` の `app_hostname` にサブドメイン（例: `notes.example.com`）を書く。
-4. ログイン方法を決める。
-   - **One-time PIN**（メールに届くコードで認証）—— 追加設定なしで使える。ひとりで使うならこれが最小。
-   - **Google** —— Google Cloud 側で OAuth クライアントを作り、client ID / secret を
-     Access の Identity provider に登録する。同意画面まわりは Terraform で完結しないので手作業が残る。
+5. ログイン方法はダッシュボードでは触らない。Terraform が **One-time PIN**
+   （`allowed_email` 宛にコードを送り、それを打ち返して認証する）を作り、
+   Access アプリケーションの唯一のログイン方法に設定する。
+   Zero Trust を有効にした時点で `cloudflare` 型の IdP（Cloudflare ダッシュボードの
+   アカウントでログインする方式）が 1 つだけ存在しており、`allowed_idps` を書かないと
+   これが選ばれて `dash.cloudflare.com` のログイン画面に飛ばされる。
+   Google などの OAuth を使いたくなった場合だけ、`cloudflare_zero_trust_access_identity_provider`
+   を足して `allowed_idps` を差し替える（OAuth クライアントの作成と同意画面は手作業が残る）。
 
 ## 2. Terraform 用の API トークン（ダッシュボード）
 
@@ -47,8 +51,12 @@ R2 を Terraform の state 置き場に使う場合も同様
 
 | ポリシー | 対象 | 権限 |
 |---|---|---|
-| 1 | アカウント全体 | D1 : Edit / Cloudflare Pages : Edit / Access: Apps and Policies : Edit |
+| 1 | アカウント全体 | D1 : Edit / Cloudflare Pages : Edit / Access: Apps and Policies : Edit / Access: Organizations, Identity Providers, and Groups : Edit |
 | 2 | 指定ドメイン（app_hostname のゾーン） | DNS : Edit |
+
+`Access: Apps and Policies : Edit` があっても、IdP（ログイン方法）の作成は別の権限グループの管轄で、
+`POST /accounts/<id>/access/identity_providers` が `1010 auth.forbidden` で弾かれる。
+IdP の**一覧取得は Apps and Policies だけでも 200 が返る**ため、read は通るのに apply だけ落ちる。
 
 2 つ目は DNS レコードを Terraform で管理するために要る。DNS の権限は Zone スコープなので、
 「アカウント全体」のポリシーの一覧には出てこない。既存のポリシーの対象を変えるのではなく、
